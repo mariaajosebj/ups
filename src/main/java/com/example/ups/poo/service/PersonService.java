@@ -26,11 +26,28 @@ public class PersonService {
                 return ResponseEntity.status(HttpStatus.OK).body(person);
             }
         }
-        String message = "Person with id: " + id + "not found";
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Person with id; "+ id + " not found");
     }
 
     public ResponseEntity createPerson(Person person) {
+        if (person.getId() == null || person.getId().isEmpty()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Person ID is required");
+        }
+        if (person.getName() == null || person.getName().isEmpty()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Person Name is required");
+        }
+        if (person.getLastname() == null || person.getLastname().isEmpty()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Person Lastname is required");
+        }
+        if (person.getAge() <= 0) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Person Age is required");
+        }
+
+        for (Person existingPerson : personList) {
+            if (existingPerson.getId().equalsIgnoreCase(person.getId())) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Person with this ID already exists");
+            }
+        }
         personList.add(person);
         return ResponseEntity.status(HttpStatus.OK).body("Person successfully registered");
     }
