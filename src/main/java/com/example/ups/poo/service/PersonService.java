@@ -17,7 +17,8 @@ public class PersonService {
     public PersonService(PersonRepository personRepository) {
         this.personRepository = personRepository;
     }
-    public ResponseEntity getAllPeople() {
+
+    public List<PersonDTO> fetchAllPeopleRecord() {
         Iterable<Person> personIterable = personRepository.findAll();
         List<PersonDTO> personDTOList = new ArrayList<>();
 
@@ -28,22 +29,28 @@ public class PersonService {
             personDTO.setId(per.getPersonId());
             personDTOList.add(personDTO);
 
+        }
+        return personDTOList;
     }
 
-    if (personDTOList.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Person List is empty");
+    public ResponseEntity getAllPeople() {
+        List<PersonDTO> personDTOList = new ArrayList<>();
+        if (personDTOList.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Person list is empty");
         }
         return ResponseEntity.status(HttpStatus.OK).body(personDTOList);
+
     }
 
-//    public ResponseEntity getPersonById(String id) {
-//        for (PersonDTO personDTO : personDTOList) {
-//            if (id.equalsIgnoreCase(personDTO.getId())) {
-//                return ResponseEntity.status(HttpStatus.OK).body(personDTO);
-//            }
-//        }
-//        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Person with id; " + id + " not found");
-//    }
+    public ResponseEntity getPersonById(String id) {
+        List<PersonDTO> personDTOList = fetchAllPeopleRecord();
+        for (PersonDTO personDTO : personDTOList) {
+            if (id.equalsIgnoreCase(personDTO.getId())) {
+                return ResponseEntity.status(HttpStatus.OK).body(personDTO);
+            }
+        }
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Person with id; " + id + " not found");
+    }
 //
 //    public ResponseEntity createPerson(PersonDTO personDTO) {
 //        if (personDTO.getId() == null || personDTO.getId().isEmpty()) {
