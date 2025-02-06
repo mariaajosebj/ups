@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class PersonService {
@@ -18,23 +19,27 @@ public class PersonService {
         this.personRepository = personRepository;
     }
 
+    private PersonDTO mapPersonToPersonDTO(Person person) {
+    PersonDTO personDTO = new PersonDTO();
+        personDTO.setName(person.getName() + " " + person.getLastname());
+        personDTO.setAge(person.getAge());
+        personDTO.setId(person.getPersonId());
+        return  personDTO;
+}
+
     public List<PersonDTO> fetchAllPeopleRecord() {
         Iterable<Person> personIterable = personRepository.findAll();
         List<PersonDTO> personDTOList = new ArrayList<>();
 
         for (Person per : personIterable) {
-            PersonDTO personDTO = new PersonDTO();
-            personDTO.setName(per.getName() + " " + per.getLastname());
-            personDTO.setAge(per.getAge());
-            personDTO.setId(per.getPersonId());
+            PersonDTO personDTO = mapPersonToPersonDTO(per);
             personDTOList.add(personDTO);
-
         }
         return personDTOList;
     }
 
     public ResponseEntity getAllPeople() {
-        List<PersonDTO> personDTOList = new ArrayList<>();
+        List<PersonDTO> personDTOList = fetchAllPeopleRecord();
         if (personDTOList.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Person list is empty");
         }
@@ -43,14 +48,16 @@ public class PersonService {
     }
 
     public ResponseEntity getPersonById(String id) {
-        List<PersonDTO> personDTOList = fetchAllPeopleRecord();
-        for (PersonDTO personDTO : personDTOList) {
-            if (id.equalsIgnoreCase(personDTO.getId())) {
-                return ResponseEntity.status(HttpStatus.OK).body(personDTO);
-            }
+        Optional<Person> personOptional = personRepository.findByPersonId(id);
+        if (personOptional.isPresent()) {
+            PersonDTO personDTO = mapPersonToPersonDTO(personOptional.get());
+            return ResponseEntity.status(HttpStatus.OK).body(personDTO);
+        } else {
+            String message = "Person with id: " + id + "not found";
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Person with id; " + id + " not found");
         }
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Person with id; " + id + " not found");
     }
+
 //
 //    public ResponseEntity createPerson(PersonDTO personDTO) {
 //        if (personDTO.getId() == null || personDTO.getId().isEmpty()) {
