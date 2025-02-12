@@ -22,19 +22,19 @@ public class PersonController {
     public ResponseEntity getPersonById(@RequestParam String id) {
         return personService.getPersonById(id);
     }
+    @PostMapping("/create-person")
+    public ResponseEntity createPerson(@RequestBody PersonDTO personDTO) {
+        return personService.createPerson(personDTO);
+    }
 
-//    @PostMapping("/person")
-//    public ResponseEntity createPerson(@RequestBody PersonDTO personDTO) {
-//        return personService.createPerson(personDTO);
-//    }
-//
-//    @PutMapping("/update-person")
-//    public ResponseEntity updatePerson(@RequestBody PersonDTO personDTO) {
-//        return personService.updatePerson(personDTO);
-//    }
-//
-//    @DeleteMapping("/delete-person")
-//    public ResponseEntity deletePerson(@RequestParam String id) {
-//        return personService.deletePersonById(id);
-//    }
+    @PutMapping("/update-person")
+    public ResponseEntity updatePerson(@RequestBody PersonDTO personDTO) {
+        return personService.updatePerson(personDTO);
+    }
+
+    @DeleteMapping("/delete-person")
+    public ResponseEntity deletePerson(@RequestParam String id) {
+        return personService.deletePersonById(id);
+    }
 }
+
