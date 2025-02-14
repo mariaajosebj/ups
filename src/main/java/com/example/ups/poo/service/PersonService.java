@@ -105,16 +105,21 @@ public class PersonService {
             if (personDTO.getName() != null && !personDTO.getName().isEmpty()) {
                 String fullName = personDTO.getName();
                 if (fullName.contains(" ")) {
-                String[] fullNameArray = fullName.split(" ");
+                    String[] fullNameArray = fullName.split(" ", 2);
                     person.setName(fullNameArray[0]);
                     person.setLastname(fullNameArray[1]);
                 } else {
                     return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Name must include both first name and last name");
                 }
+            } else {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Name register is invalid");
             }
             if (personDTO.getAge() > 0) {
                 person.setAge(personDTO.getAge());
+            } else {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Age must be greater than zero");
             }
+
             personRepository.save(person);
             return ResponseEntity.status(HttpStatus.OK).body("Person with id: " + personDTO.getId() + " was successfully updated");
         }
